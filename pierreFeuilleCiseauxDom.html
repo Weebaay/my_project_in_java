@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+	<title>Jeu: Pierre Feuille Ciseaux</title>
+	<style>
+		/* Styles pour le corps de la page */
+        body {
+            background-color: #33e3ea; /* Couleur de fond claire */
+            color: #28039a; /* Couleur du texte */
+            font-family: 'Arial', sans-serif; /* Police */
+            text-align: center; /* Centrage du texte */
+            padding: 20px; /* Espacement */
+        }
+
+        h1 {
+            color: #28039a; /* Couleur pour le titre */
+            font-size: 36px; /* Taille du titre */
+        }
+
+        /* Styles pour les boutons */
+        button {
+            background-color: #28039a; /* Couleur de fond des boutons */
+            color: white; /* Couleur du texte des boutons */
+            border: none; /* Pas de bordure */
+            padding: 15px 32px; /* Espacement interne */
+            text-align: center; /* Centrage du texte */
+            text-decoration: none; /* Pas de soulignement */
+            display: inline-block; /* Affichage en ligne */
+            font-size: 16px; /* Taille du texte */
+            margin: 10px 2px; /* Marges */
+            cursor: pointer; /* Curseur pointer au survol */
+            border-radius: 12px; /* Bordures arrondies */
+            transition: transform 0.2s ease; /* Transition douce */
+        }
+
+        button:hover {
+            background-color: #048e26; /* Couleur au survol */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ajout d'une ombre au survol */
+        }
+
+        button:active {
+            transform: scale(1.1); /* Grossit légèrement le bouton au clic */
+        }
+
+        /* Styles pour les images dans les boutons */
+        button img {
+            border-radius: 12px; /* Ajout de bordures arrondies pour les images */
+            padding: 10px; /* Espacement autour des images */
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Animation de grossissement et d'ombre */
+        }
+
+        button img:hover {
+            transform: scale(2.0); /* Grossissement au survol */
+        }
+
+        button img:active {
+            transform: scale(1.8); /* Agrandit encore plus l'image au clic */
+        }
+
+        /* Styles pour le résultat */
+        .js-resultat {
+            opacity: 0; /* Initialement invisible */
+            transform: translateX(-100%); /* Hors de l'écran sur la gauche */
+            transition: transform 0.5s ease, opacity 0.5s ease, color 0.5s ease; /* Glissement et transparence */
+            color: black; /* Couleur initiale */
+            font-weight: bold; /* Texte en gras */
+            font-size: 16px; /* Taille du texte */
+        }
+
+        .js-resultat.visible {
+            opacity: 1; /* Devient visible */
+            transform: translateX(0); /* Se déplace à sa position d'origine */
+            color: #21068c; /* Changement de couleur lors de l'affichage */
+            font-size: 30px; /* Taille du texte lors de l'affichage */
+            animation: zoomIn 1.1s ease; /* Animation de zoom */
+        }
+
+        /* Animation de zoom */
+        @keyframes zoomIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Styles pour la section du score */
+        .js-score {
+            background-color: #2fb450; /* Couleur de fond pour la section du score */
+            border: 2px solid #28039a; /* Bordure */
+            padding: 15px; /* Espacement interne */
+            border-radius: 10px; /* Bordures arrondies */
+            display: inline-block; /* Pour adapter la taille de la boîte au contenu */
+            margin-top: 20px; /* Espacement au-dessus */
+            font-weight: bold; /* Texte en gras pour le score */
+            font-size: 18px; /* Taille du texte du score */
+        }
+
+        /* Styles pour les paragraphes */
+        p {
+            margin: 10px 0; /* Espacement vertical pour les paragraphes */
+            font-size: 20px; /* Taille du texte des paragraphes */
+        }
+
+		/* Styles pour l'animation du choix */
+        .choice-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .choice {
+            margin: 0 20px;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .choice.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .vs {
+            font-size: 30px;
+            margin: 0 20px;
+            color: #333;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .vs.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+	</style>
+</head>
+<body>
+<h1>
+	Pierre Feuille Ciseaux
+</h1>
+<button onclick = "jouer('pierre');">
+	<img src="point.png" alt="Pierre" width="100" height="100">
+</button>
+<button onclick="jouer('feuille');">
+	<img src="main(feuille).png" alt="Feuille" width="100" height="100">
+</button>
+<button onclick="jouer('ciseaux')">
+	<img src="_ciseaux.png" alt="Ciseaux" width="100" height="100">
+</button>
+
+<p class="js-resultat"></p>
+<p class="js-mainCourante"></p>
+<p class="js-score"></p>
+
+<div class="choice-container">
+    <div class="choice js-choix-utilisateur">Votre choix</div>
+    <div class="vs js-vs">VS</div>
+    <div class="choice js-choix-ia">Choix de l'IA</div>
+</div>
+
+<button onclick="mettreScoreZero();">Recommencer</button>
+
+<h2>Historique des 10 dernières parties</h2>
+<div class="js-historique"></div>
+
+<h2>Entré votre Pseudo :</h2>
+<input type="text" id="nomUtilisateur" placeholder="Votre nom">
+<button onclick="saisirNom();">Valider</button>
+<button onclick="reinitialiserHistorique();">Réinitialiser l'historique</button>
+
+
+<script src="JeuxPFC.js"></script>
+</body>
+</html>
